@@ -1,0 +1,16 @@
+---
+title: "Portfolio Part II"
+author: "MDS"
+date: "July 12, 2018"
+input: TIESv4
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(countrycode)
+ties = read_excel("a/TIES/TIESv4.xls")
+    ```
+Demonstration 2: Linear Modeling, Quantitative Analysis
+
+The dataset

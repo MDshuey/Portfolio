@@ -1,0 +1,90 @@
+---
+title: 'Portfolio: Web Analytics Case Study'
+author: "Mitchell D. Shuey"
+date: "January 17, 2019"
+output:
+  word_document: default
+---
+# About the Data:
+Several variations of Montana State University's library webpage were made in the pursuit of A/B Testing their front page. Specifically, the altered piece of the website was the headline linking to user services the library provides. The original, "Interact", had a noticably small click rate. Alternatives were considered:
+
+"Connect", "Learn", "Help", and "Services".
+
+Google Analytics along with a click-tracker called CrazyEgg were used to generate the data. Users, when visiting the site, were randomly sent to one of the five variations. Our goal is to determine which led to more clicks (the "conversion rate" or click-through rate) overall. If led to a purchase, we could also calculate average revenue-per-click.
+
+The first dataset, titled Lib_msu, shows all the pages of the whole website that were clicked on between May 29th and June 18th, 2013 (the length of the trial).
+
+The next five, ctrl and v1-v4, are the home pages' click counts over those three weeks for each variation. The code importing these files was hidden because of the room it takes up.
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(readxl)
+library(knitr)
+Lib_msu <- read_excel("C://Users/LENOVO/Documents/GitHub/Portfolio/GoogleAnalytics/MSU-Library-Pages-20130529-20130618.xlsx",    sheet = "Dataset1")
+ctrl=read.csv("C:/Users/LENOVO/Documents/GitHub/Portfolio/CrazyEgg/Homepage Version 1 - Interact, 5-29-2013/Element list Homepage Version 1 - Interact, 5-29-2013.csv")
+v1=read.csv("C:/Users/LENOVO/Documents/GitHub/Portfolio/CrazyEgg/Homepage Version 2 - Connect, 5-29-2013/Element list Homepage Version 2 - Connect, 5-29-2013.csv")
+v2=read.csv("C:/Users/LENOVO/Documents/GitHub/Portfolio/CrazyEgg/Homepage Version 3 - Learn, 5-29-2013/Element list Homepage Version 3 - Learn, 5-29-2013.csv")
+v3=read.csv("C:/Users/LENOVO/Documents/GitHub/Portfolio/CrazyEgg/Homepage Version 4 - Help, 5-29-2013/Element list Homepage Version 4 - Help, 5-29-2013.csv")
+v4=read.csv("C:/Users/LENOVO/Documents/GitHub/Portfolio/CrazyEgg/Homepage Version 5 - Services, 5-29-2013/Element list Homepage Version 5 - Services, 5-29-2013.csv")
+
+```
+Now we'll begin taking apart the data. The piece of interest is the clicks on each subtitle, compared to the total overall from the Lib_msu file.
+
+```{r}
+
+clicks = rbind(ctrl[10,], v1[7,], v2[11,], v3[8,], v4[8,])
+index = Lib_msu[3:7,]
+#Re-ordering
+index=index[c(4,5,2,3,1),]
+clicks=cbind(clicks[,-6], index)
+#Calculating click rate
+clicks$Clickthrough_Rate=clicks$`No..clicks`/clicks$Pageviews
+clicks$ctr_share=clicks$No..clicks/sum(clicks$No..clicks)
+clicks
+
+```
+We see that with a rate of 2.5%, "Connect" has the highest click-through rate, but we need to determine the significance of this with a test. Visuals including error bars will also help judge the differences of results.
+```{r graphs}
+library(ggplot2)
+plotset=gather(clicks, RateType, percent, 11, 12, 14)
+#Calculating standard deviations for each rate versus the variation's , bernuolli
+plotset$sd=sqrt(plotset$percent*(1-plotset$percent)/plotset$Pageviews)
+#plotting
+rates=ggplot(plotset, aes(RateType, percent, fill=Name))
+bars=rates+geom_col(position="dodge")
+ bars+ geom_errorbar(aes(ymin=percent-sd, ymax=percent+sd), width=.4, position=position_dodge(.9))+ggtitle("Rates of Click-throughs and Departure, by Variation")
+ggplot(plotset, aes(Name, `Avg. Time on Page`, fill=Name))+
+  geom_col(position="dodge")+ggtitle("Average Time Spent, by Variation")
+share=ggplot(clicks, aes(No..clicks, fill=Name))
+
+```
+Exit Rate- Leaving the site entirely after reaching one of the home page variations. May have visited other pages prior to ending at this page.
+Bounce Rate- Leaving the site after reaching one of the home page variations. Entering and leaving, nothing more.
+
+While it's hard to interperet whether a higher or lower exit rate means users found what they were looking for, we know that a lower bounce rate is better because if the users found what they were looking for
+
+# Hypothesis testing
+
+We initially assume the null: All treatments (versions) have an equal conversion rate
+The alternative: they are unequal in some degree.
+
+We can then dive into comparing all five click-through rates against each other, with the p-values in the matrix representing the chance that the difference between, say, the control (1) and "Help" (4) was due to the randomness of the data:
+
+```{r test}
+prop.test(clicks$No..clicks, clicks$Pageviews)
+#The p-value is significant enough to plan further testing
+
+pairwise.prop.test(clicks$No..clicks, clicks$Pageviews, p.adjust.method = "bonferroni")
+```
+# Conclusion
+According to our data, despite the Click-through rates being different, using the standard 5% p-value cutoff, few have a significant difference from other variations 1-on-1. The results of the original research state that "Learn" has the worst click-through performance. I conclude no significant difference was found within the data here; however this does not mean we are unable to make a recommendation.
+
+Looking at the average time chart, we can see that the control, "Interact", has the shortest average time on page. In a library context, where finding what you want on the page quickly is important, this could mean that the experiment itself led students to take more time on the home page to make sure they were going to select what they needed. They might be used to looking for "Interact", versus interpereting the new variations. This is an important effect to consider when changing sections of a website.
+
+Given the chance to repeat the test, less variations, or limiting testing to one alternative at a time would be a good idea. It's worth noting that comparing all of these proportions to each other at once calls for adjustments to the p-value. In this case, using the "bonferroni" method, all p-values were multiplied by 15.
+
+It's worth noting that on the MSU library's current page, the choice was made to use "Services". The original paper made different choices in calculating click rates and decided to forego testing for significance; I have emailed the author and asked about the calculation methodology. The original paper also conducted user surveys, which offer far more contextual insight into a user's behavior and final click decisions. A good insight campaign uses all available sources of consumer experience information.
+
+Works Cited:
+Young SWH (2014) A/B Testing Web Analytics Data [dataset]. Montana State University ScholarWorks.
+http://doi.org/10.15788/m2rp42
