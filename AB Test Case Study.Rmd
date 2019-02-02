@@ -108,6 +108,7 @@ The original paper made different choices in calculating the click rates and dec
 
 ### Works Cited:
 Young, Scott W. H. "Improving Library User Experience with A/B Testing: Principles and Process." Weave, Michigan Publishing, 2014, dx.doi.org/10.3998/weave.12535642.0001.101.
+
 Young SWH (2014) A/B Testing Web Analytics Data [dataset]. Montana State University ScholarWorks.
 http://doi.org/10.15788/m2rp42
 
