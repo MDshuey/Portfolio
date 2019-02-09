@@ -10,6 +10,6 @@ A Shiny dashboard demonstration of a hypothetical investment portfolio with soci
 Source code is not publicly available at this time.
 
 
-### Part 4 *(In development*)- Mush-ine Learning
+### Part 4 *(In development*)- Mush-chine Learning
 
 A feature-extraction project using data from agaricus fungi, attempting to predict edibility/toxicity via categorical variables.
