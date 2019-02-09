@@ -1,8 +1,8 @@
 ---
-title: "MDS Data Science Portfolio"
-author: "Mitchell D. Shuey"
+title: "MDS Data Science Portfolio Part 1"
+author: "MD Shuey"
 output:
-  word_document: default
+  word_document:
   pdf_document: default
   html_document:
     df_print: paged
