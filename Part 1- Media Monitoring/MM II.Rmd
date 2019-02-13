@@ -1,13 +1,17 @@
 ---
 title: "Media Monitor II"
-author: "MDS"
+author: "MD Shuey"
 date: "February 9, 2019"
 output: html_document
 ---
 # Introduction
 
 The media relations of any person or entity are vital signs of influence. For a country, this has been referred to as "soft power", usually in the context of cultural transmission. How and when national or international media sources choose to report on a country's affairs are questions of importance for national external relations. 
-```{r setup, include=FALSE}
+
+The [NewsAPI]("newsapi.org") is an online HTML-based interface that allows the user to view article and blogpost information from hundreds of websites in real time. This will be the tool that I intend to use to monitor the test subject of a given entity (here, the country of Brazil) from a starting period to an ending period.
+
+```{r setup, include=FALSE, echo=FALSE}
+devtools::install_github("MDshuey/newsAPI")
 library(newsAPI)
 library(tidyverse)
 library(httr)
@@ -18,14 +22,31 @@ cat(
   fill = TRUE,
   file = file.path("~", ".Renviron")
 )
+```
+``` {r}
+
 src.en=get_sources(language="en")
+src.en$category <- as.factor(src.en$category)
 src.all=get_sources()
 
 src.pt=get_sources(language="pt")
 
-df <- get_articles("cnn")
-
-df <- lapply(src.en$id, get_articles)
-
+df <- get_articles(keyword="brazil", sources="cnn")
+nonsoft.list <- which(src.en$category %in% c("entertainment", "sports"))
+recent <- lapply(src.en$id[-nonsoft.list], get_articles, keyword="brazil")
+recent <- do.call("rbind", recent)
+Jan12=get_articles(keyword="brazil", from="2019-01-12", to="2019-01-12")
+#run get_articles 31 times, once for each day since 31 days ago, and convert it all to one dataframe
+br.data <- lapply(
+  seq.Date(from=Sys.Date()-30, to=Sys.Date(), by="day"),
+  get_articles, keyword="brazil",
+                  pageSize=100)
+br.data <- do.call("rbind", br.data)
+br.data <- rbind(br.data, Jan12)
 ```
+You may exclude entertainment and sports , however in social contexts they are indicators of soft power for a country, or may be relevant for organizations checking their presence in online media.
 
+## Acknowledgements 
+
+Thanks to NewsAPI.org for making such an accessible API.
+Thanks to GitHub user mKearney for originally writing the newsAPI wrapper for R.
