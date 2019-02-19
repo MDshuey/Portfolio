@@ -35,16 +35,51 @@ df <- get_articles(keyword="brazil", sources="cnn")
 nonsoft.list <- which(src.en$category %in% c("entertainment", "sports"))
 recent <- lapply(src.en$id[-nonsoft.list], get_articles, keyword="brazil")
 recent <- do.call("rbind", recent)
-Jan12=get_articles(keyword="brazil", from="2019-01-12", to="2019-01-12")
+Jan13 <- get_articles(keyword="brazil", from="2019-01-13", to="2019-01-13", sortBy= "relevancy")
+Jan14 <- get_articles(keyword="brazil", from="2019-01-14", to="2019-01-14")
 #run get_articles 31 times, once for each day since 31 days ago, and convert it all to one dataframe
-br.data <- lapply(
-  seq.Date(from=Sys.Date()-30, to=Sys.Date(), by="day"),
-  get_articles, keyword="brazil",
-                  pageSize=100)
-br.data <- do.call("rbind", br.data)
-br.data <- rbind(br.data, Jan12)
+daily_recaps <- function(from = Sys.Date()-30, ...) {
+  x <- seq.Date(from = as.Date(from), to = Sys.Date(), by="day")%>%as.character()
+  out <- vector("list", length(x))
+  for (i in seq_along(x)) {
+    out[[i]] <- get_articles(..., from=x[[i]], to=x[[i]])
+  }
+  out <- do.call("rbind", out)
+  for (i in 2:length(out)) {
+    out[,i] <- unlist(out[,i])
+  }
+  out
+}
+
+test10 <- daily_recaps(from="2019-02-10", keyword="China")
+br.data.rel <- daily_recaps(keyword="+brazil", sortBy="relevancy")
+br.data.pop <- daily_recaps(keyword="brazil", sortBy="popularity")
+Feb12=get_articles(keyword="brazil", from="2019-02-12", to="2019-02-12", sortBy = "relevancy")
+br.data.rel <- rbind(br.data.rel, Feb12)
+br.data.rel <- unique(br.data.rel)
+
+br.data.rel[,2] <- unlist(br.data.rel[,2])
+#merging with category
+br.data.rel <- merge(br.data.rel, src.all[,c(2,5)], all.x= T, all.y = F, by.x = "source", by.y="name")
+br.data.rel <- as.data.frame(br.data.rel)
+write.csv(br.data.rel, paste0(getwd(), "/brazil1-18_2-17.csv"))
 ```
-You may exclude entertainment and sports , however in social contexts they are indicators of soft power for a country, or may be relevant for organizations checking their presence in online media.
+You may exclude entertainment and sports, however in social contexts they are indicators of soft power for a country, or may be relevant for organizations checking their presence in online media.
+``` {r tm}
+library(tm)
+library(SnowballC)
+
+cleandocs <- function(corp){
+corp <- tm_map(corp, removePunctuation)
+corp <- tm_map(corp, content_transformer(tolower))
+corp <- tm_map(corp, removeWords, stopwords("english"))
+corp <- tm_map(corp, stemDocument)
+corp
+}
+corp <- Corpus(VectorSource(br.data.rel$title))
+corp <- cleandocs(corp)
+matrix=DocumentTermMatrix(corp)
+```
 
 ## Acknowledgements 
 
