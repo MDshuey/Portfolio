@@ -50,15 +50,18 @@ daily_recaps <- function(from = Sys.Date()-30, ...) {
   }
   out
 }
-
 test10 <- daily_recaps(from="2019-02-10", keyword="China")
+#parameter testing
 br.data.rel <- daily_recaps(keyword="+brazil", sortBy="relevancy")
 br.data.pop <- daily_recaps(keyword="brazil", sortBy="popularity")
 Feb12=get_articles(keyword="brazil", from="2019-02-12", to="2019-02-12", sortBy = "relevancy")
+
+
 br.data.rel <- rbind(br.data.rel, Feb12)
 br.data.rel <- unique(br.data.rel)
 
 br.data.rel[,2] <- unlist(br.data.rel[,2])
+
 #merging with category
 br.data.rel <- merge(br.data.rel, src.all[,c(2,5)], all.x= T, all.y = F, by.x = "source", by.y="name")
 br.data.rel <- as.data.frame(br.data.rel)

@@ -7,10 +7,19 @@ input: agaricus lepiota data from UCI
 The data that we are processing is from the UCI Machine learning repository.
 https://archive.ics.uci.edu/ml/datasets/mushroom
 ```{r, mnist}
+devtools::install_github("rstudio/keras")
+devtools::install_github("rstudio/tensorflow")
+devtools::install_github("rstudio/reticulate")
+
 library(keras)
+library(tensorflow)
+library(reticulate)
 
 # Data Preparation -----------------------------------------------------
-install_keras()
+install_keras(tensorflow= "1.9")
+install_tensorflow()
+library(keras)
+library(tensorflow)
 batch_size <- 128
 num_classes <- 10
 epochs <- 12
@@ -46,16 +55,22 @@ y_test <- to_categorical(y_test, num_classes)
 # Define Model -----------------------------------------------------------
 
 # Define model
-model <- keras_model_sequential() %>%
-  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',
-                input_shape = input_shape) %>% 
-  layer_conv_2d(filters = 64, kernel_size = c(3,3), activation = 'relu') %>% 
-  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
-  layer_dropout(rate = 0.25) %>% 
-  layer_flatten() %>% 
-  layer_dense(units = 128, activation = 'relu') %>% 
-  layer_dropout(rate = 0.5) %>% 
-  layer_dense(units = num_classes, activation = 'softmax')
+model <- keras_model_sequential() 
+model %>% layer_dense(units = 784, input_shape = c(28, 28, 1))%>% 
+layer_dropout(rate=0.4)%>%
+layer_activation(activation = 'relu') %>% 
+layer_dense(units = 10) %>% 
+layer_activation(activation = 'softmax')
+# %>%
+  # layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',
+  #               input_shape = input_shape) %>% 
+  # layer_conv_2d(filters = 64, kernel_size = c(3,3), activation = 'relu') %>% 
+  # layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  # layer_dropout(rate = 0.25) %>% 
+  # layer_flatten() %>% 
+  # layer_dense(units = 128, activation = 'relu') %>% 
+  # layer_dropout(rate = 0.5) %>% 
+  # layer_dense(units = num_classes, activation = 'softmax')
 
 # Compile model
 model %>% compile(
