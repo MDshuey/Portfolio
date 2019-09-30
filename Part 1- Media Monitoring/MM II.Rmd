@@ -8,7 +8,7 @@ output: html_document
 
 The media relations of any person or entity are vital signs of influence. For a country, this has been referred to as "soft power", usually in the context of cultural transmission. How and when national or international media sources choose to report on a country's affairs are questions of importance for national external relations. 
 
-The [NewsAPI]("newsapi.org") is an online HTML-based interface that allows the user to view article and blogpost information from hundreds of websites in real time. This will be the tool that I intend to use to monitor the test subject of a given entity (here, the country of Brazil) from a starting period to an ending period.
+The [NewsAPI]("newsapi.org") is an online HTML-based interface that allows the user to view article and blogpost information from hundreds of websites in real time. This will be the tool that I intend to use to monitor the test subject of a given entity.
 
 ```{r setup, include=FALSE, echo=FALSE}
 devtools::install_github("MDshuey/newsAPI")
@@ -49,7 +49,7 @@ daily_recaps <- function(from = Sys.Date()-30, ...) {
 test10 <- daily_recaps(from="2019-09-10", keyword="China")
 
 #parameter testing
-br.data.rel <- daily_recaps(keyword="+brazil", from = "2019-09-21", sortBy="relevancy")
+br.data.rel <- daily_recaps(keyword="brazil", from = "2019-09-21", sortBy="relevancy")
 br.data.pop <- daily_recaps(keyword="brazil", from = "2019-09-21", sortBy="popularity")
 
 ```
@@ -68,14 +68,16 @@ corp
 }
 
 #Performing an example
-corp <- Corpus(VectorSource(br.data.rel$title))
-corp <- cleandocs(corp)
-matrix=DocumentTermMatrix(corp)
 
-wordfreq = findMostFreqTerms(matrix, 100)
-wordfreq=wordfreq$`1`
-wordfreq=as.data.frame(wordfreq)
-wordfreq=setDT(wordfreq, keep.rownames=T)
+yc_7 <- daily_recaps(keyword = "yield curve", from = "2019-09-16")
+corp <- Corpus(VectorSource(yc_7$title))
+corp <- cleandocs(corp)
+
+matrix <- DocumentTermMatrix(corp)
+
+wordfreq <- findMostFreqTerms(matrix, 100)
+wordfreq <- wordfreq$`1`
+wordfreq <- as.data.frame(wordfreq)
 head(wordfreq, 25)
 
 ```
