@@ -1,0 +1,37 @@
+---
+title: "MMIII"
+author: "MD Shuey"
+date: "11/20/2019"
+output: html_document
+---
+``` {r setup}
+library(newsanchor)
+#setting personal key
+set_api_key(path = "~/.Renviron")
+
+daily_recaps <- function(from_ = Sys.Date()-31, ...) {
+  dates <- seq.Date(from = as.Date(from_), to = Sys.Date(), by = "day")
+ out <- sample_response$results_df[0,]
+    for (i in 1:length(dates)) {
+      
+    results <- get_everything(..., from = dates[i], to = dates[i])
+    out <- rbind(out, results$results_df)
+  }
+  out
+}
+#for this function- find a way to convery metadata info?
+
+```    
+
+``` {r nr}
+
+impeach_recap <- daily_recaps(query = "impeach")
+
+
+  
+  get_everything("impeach", sort_by = "popularity")
+```
+
+```{r sentiment}
+
+```
