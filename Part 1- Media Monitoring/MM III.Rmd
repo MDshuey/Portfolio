@@ -5,11 +5,12 @@ date: "11/20/2019"
 output: html_document
 ---
 ``` {r setup}
+devtools::install_github("newsanchor")
 library(newsanchor)
 #setting personal key
 set_api_key(path = "~/.Renviron")
 
-daily_recaps <- function(from_ = Sys.Date()-31, ...) {
+daily_recaps <- function(from_ = Sys.Date()-30, ...) {
   dates <- seq.Date(from = as.Date(from_), to = Sys.Date(), by = "day")
  out <- sample_response$results_df[0,]
     for (i in 1:length(dates)) {
@@ -27,8 +28,6 @@ daily_recaps <- function(from_ = Sys.Date()-31, ...) {
 
 impeach_recap <- daily_recaps(query = "impeach")
 
-
-  
   get_everything("impeach", sort_by = "popularity")
 ```
 
