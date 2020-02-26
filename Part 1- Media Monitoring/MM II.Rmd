@@ -15,7 +15,7 @@ devtools::install_github("MDshuey/newsAPI")
 library(newsAPI)
 library(tidyverse)
 library(httr)
-"c180fe7feb8e412583a6bd1acbcecab7" -> NEWSAPI_KEY
+"XXXXXXXXXXXXXXXXXXXXX" -> NEWSAPI_KEY
 cat(
   paste0("NEWSAPI_KEY=", NEWSAPI_KEY),
   append = TRUE,
