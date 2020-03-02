@@ -81,4 +81,9 @@ for (i in 1:24) {
   })
 }
 
+
+t_cc <- get_everything(qInTitle = "Trump",
+                                  from = '2020-02-02', to = '2020-02-02',
+                                  language = "en", sort_by = "popularity")
+save(t_cc, file ="~/GitHub/Portfolio/Part 1- Media Monitoring/trump02-02.Rdata")
 ```
