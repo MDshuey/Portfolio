@@ -61,36 +61,78 @@ cc4 <- countcapture(day_ = "2020-01-29")
 cc5 <- countcapture(day_ = "2020-01-30")
 cc6 <- countcapture(day_ = "2020-01-31")
 
-superMap <- function(...) {
-
-}
 
 daymerge <- Map(c, cc, cc2)
 daymerge <- Map(c, daymerge, cc3,cc4,cc5,cc6)
 
-save(daymerge, file = january_cc)
+save(daymerge, file = '~/january_cc.Rdata')
 
 cc0201 <- countcapture(day_ = "2020-02-01")
+cc0202 <- countcapture(day_ = "2020-02-02")
+cc0203 <- countcapture(day_ = "2020-02-3")
+
+ccFeb <- mapply(pol_c, function(pol){
+  rbind(cc0201[[pol]], cc0202[[pol]])
+}, simplify = F)
+
+newpull <- function(){
+  lf <- list.files("~/GitHub/Portfolio/Part 1- Media Monitoring/countcapture", full.names = T)
+  #filter just the cc names of Rdata files
+  lf[[grepl("/cc/cc", lf)]]
+  # now take out the date
+  lastday <- str_extract("\\d\\d-\\d.", lf[[length(lf)]])
+  #make the full date
+  lastday <- paste0("2020-", lastday)
+  if(as.Date(lastday) == Sys.date()){stop("You're all good Holmes, up-to-date!")}
+  #remove the dot
+  else if (grep("$", lastday, value = T) == "."){lastday <- str_split(lastday, "\\.")[1]}
+  require("lubridate")
+  lastday <- as.Date(lastday)
+  #AOTJFT
+  for (i in seq.Date(lastday, (Sys.Date()-days(1)))) {
+    capture <- countcapture(day_ = i)
+    save(capture, file = paste0('~/countcapture/cc/cc',as.character(i),'.Rdata'))
+  }
+}
 
 
-#FEBRUARY
-for (i in 1:24) {
-  capture <- countcapture(day_ = paste0("2020-02-", i))
-  febmerge <- lapply(capture, function(pol) {
-    Map(c, febmerge[[pol]], capture[[pol]])
-  })
+pull for (i in seq.Date(lastday, (Sys.Date()-days(1)))) {
+    capture <- countcapture(day_ = i)
+    save(capture, file = paste0('~/countcapture/cc/cc',as.character(i),'.Rdata'))
+  }
+
+
+for (j in 3:29) {
+  day <- paste0('2020-02-', j)
+  media <- get_everything(qInTitle = "Trump",
+                      language = 'en',
+                      from = day, to=day,
+                      sort_by = "popularity")
+  save(media, file = paste0("~/countcapture/tcc02-", j, '.Rdata'))
 }
-#MARCH
-marchget <- function()lastday{
-for (i in lastday:5) {
-  capture <- countcapture(day_ = paste0("2020-03-", i))
-  febmerge <- lapply(capture, function(pol) {
-    Map(c, febmerge[[pol]], capture[[pol]])
-  })
-}
-}
-t_cc <- get_everything(qInTitle = "Trump",
-                                  from = '2020-02-02', to = '2020-02-02',
-                                  language = "en", sort_by = "popularity")
-save(t_cc, file ="~/GitHub/Portfolio/Part 1- Media Monitoring/trump02-02.Rdata")
+tcc0203 <- get_everything(qInTitle = "Trump",
+                      language = 'en',
+                      from = '2020-02-03', to='2020-02-03',
+                      sort_by = "popularity")
+
 ```
+
+
+```{r candidate_pull}
+
+biddy <- data("countcapture/cc01-26.Rdata")
+
+candidate <- function(name) {
+  
+  list(
+    metadata = do.call(rbind, lapply(list.files("countcapture"), function(file){
+      file
+    }))
+    
+    results.df = do.call(rbind, lapply(list.files("countcapture"), function(file){
+      file[[name]]$results.df
+    }))
+  )
+  }
+
+biddy <- candidate("Biden")
