@@ -8,11 +8,3 @@ A case study of an A/B test performed on a library's home page, with hypothesis 
 ### Part 3- [ESG Dashboard](https://mdshuey.shinyapps.io/ESGdashDemo/)
 A Shiny dashboard demonstration of a hypothetical investment portfolio with social/envorimental impact data using the [IRIS](iris.thegiin.org) catalog.
 Source code is not publicly available at this time.
-
-
-### Part 4 *(In development*)- Mush-chine Learning
-
-A feature-extraction project using data from agaricus fungi, attempting to predict edibility/toxicity via categorical variables.
-
-### Part 4 *(In development*)- Knotkeeper
-Inkan khipu knot data
